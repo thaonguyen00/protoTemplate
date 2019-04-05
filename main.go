@@ -58,12 +58,12 @@ import "google/api/annotations.proto";
 
 option java_multiple_files = true;
 service Template {
-  rpc GetTemplate (TemplateRequest) returns (Template) {
+  rpc GetTemplate (TemplateRequest) returns (TemplateReply) {
     option (google.api.http) = {
              get:"/api/v1/template/{templateguid}"
          };
   }
-  rpc GetTemplates (TemplatesRequest) returns (Templates) {
+  rpc GetTemplates (TemplatesRequest) returns (TemplatesReply) {
     option (google.api.http).get = "/api/v1/templates";
   }
 
@@ -90,7 +90,7 @@ message TemplatesRequest {
   bool descendingOrder = 6;
 
 }
-message Templates {
+message TemplatesReply {
   repeated Template templates =1;
 }
 `
