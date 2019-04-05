@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 	"io/ioutil"
@@ -15,12 +14,13 @@ var flags struct {
 	FileIn  string
 	FileOut string
 	Entity  string
+	Double bool
 }
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "protoTemplate"
-	app.Usage = "add generic service code to a proto file"
+	app.Usage = "add generic service code to a proto file "
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "input, i",
@@ -38,6 +38,11 @@ func main() {
 			Usage:       "Entity name",
 			Value:       "Template",
 			Destination: &flags.Entity,
+		},
+		cli.BoolFlag{
+			Name:        "Double, d",
+			Usage:       "Change all int64 values into double",
+			Destination: &flags.Double,
 		},
 	}
 	app.Action = launch
@@ -96,8 +101,10 @@ message TemplatesReply {
 `
 
 func launch(_ *cli.Context) error {
-	file, _ := filepath.Abs(flags.FileIn)
-	fmt.Println("worked:", file)
+	file, err := filepath.Abs(flags.FileIn)
+	if err != nil {
+		return errors.Wrap(err, "Failed to get file: " + flags.FileIn)
+	}
 
 	b, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -108,6 +115,10 @@ func launch(_ *cli.Context) error {
 	content = strings.Replace(content, oldCode, newCode, -1)
 	content = strings.Replace(content, "Template", flags.Entity, -1)
 	content = strings.Replace(content, "template", strings.ToLower(flags.Entity), -1)
+
+	if flags.Double {
+		content = strings.Replace(content, "int64 ", "double ", -1)
+	}
 
 	var fOut *os.File
 	if flags.FileOut == "" {
