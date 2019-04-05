@@ -91,7 +91,7 @@ message TemplatesRequest {
 
 }
 message TemplatesReply {
-  repeated Template templates =1;
+  repeated TemplateReply templates =1;
 }
 `
 
