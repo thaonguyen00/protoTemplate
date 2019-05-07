@@ -75,12 +75,33 @@ service Template {
   rpc HealthCheck (HealthRequest) returns (HealthReply) {
     option (google.api.http).get = "/api/v1/health";
   }
+
+  rpc CreateStream(Connect) returns (stream Message);
+  rpc BroadcastMessage(Message) returns (Close);
 }
 message HealthRequest{}
 
 message HealthReply{
   string status = 1;
 }
+message User {
+  string id = 1;
+  string name = 2;
+}
+
+message Message {
+  string id = 1;
+  TemplateReply template = 2;
+  string timestamp = 3;
+}
+
+message Connect {
+  User user = 1;
+  bool active = 2;
+}
+
+message Close {}
+
 message TemplateRequest {
   string templateguid = 1;
   string attributes = 2;
